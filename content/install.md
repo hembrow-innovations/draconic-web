@@ -75,11 +75,11 @@ draconic build --target native hello.drac -o hello
 
 ## Zed editor
 
-`.drac` files are Programs. Zed can highlight them. The in-repo extension is not in the Zed marketplace. Install it as a Zed dev extension from [editors/zed](https://github.com/hembrow-innovations/draconic/tree/main/editors/zed).
+`.drac` files are Programs. Zed can highlight them. The extension is not in the Zed marketplace. Install it as a Zed dev extension from [draconic-zed](https://github.com/hembrow-innovations/draconic-zed).
 
 - Open the Extensions view (`zed: extensions`)
 - Choose Install Dev Extension
-- Pick `editors/zed`, the directory that contains `extension.toml`. Do not pick the repo root.
+- Pick the `draconic-zed` repo root, the directory that contains `extension.toml`. Do not pick `languages/draconic`.
 
 Reopen a `.drac` file. The status bar language should read Draconic.
 

@@ -230,7 +230,7 @@ test("learn pages", () => {
   expect(installPage.body).not.toContain("LSP");
   expect(installPage.body).not.toContain("VS Code");
   expect(install).toContain(
-    '<a href="https://github.com/hembrow-innovations/draconic/tree/main/editors/zed">editors/zed</a>',
+    '<a href="https://github.com/hembrow-innovations/draconic-zed">draconic-zed</a>',
   );
   expect(install).toContain('<a href="/cli">CLI</a>');
   const zedIdx = installPage.body.indexOf("## Zed editor");

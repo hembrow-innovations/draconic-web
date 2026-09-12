@@ -15,7 +15,7 @@ function documentTitle(source: string, pageTitle: string): string {
   if (!/\bhead:/.test(source)) {
     return "Draconic";
   }
-  const template = source.match(/title:\s*`([^`]+)`/);
+  const template = source.match(/title:\s*(?:loaderData\s*\?\s*)?`([^`]+)`/);
   if (template?.[1] !== undefined) {
     return template[1]
       .replace(/\$\{loaderData\?\.title\s*\?\?[^}]+\}/g, pageTitle)
@@ -72,18 +72,49 @@ test("document title", () => {
   expect(root).toContain('title: "Draconic"');
   expect(documentTitle(home, "Draconic")).toBe("Draconic");
 
+  const learnHostIoTitle = documentTitle(
+    routeSource("host-io.tsx"),
+    loadMarkdownPage("host-io").title,
+  );
+  const referenceHostIoTitle = documentTitle(
+    routeSource("reference-host-io.tsx"),
+    loadMarkdownPage("reference-host-io").title,
+  );
+  const learnPackagesTitle = documentTitle(
+    routeSource("packages.tsx"),
+    loadMarkdownPage("packages").title,
+  );
+  const referencePackagesTitle = documentTitle(
+    routeSource("reference-packages.tsx"),
+    loadMarkdownPage("reference-packages").title,
+  );
+
+  expect(learnHostIoTitle).toContain("Learn");
+  expect(learnHostIoTitle).toContain("host I/O");
+  expect(referenceHostIoTitle).toContain("Reference");
+  expect(referenceHostIoTitle).toContain("host I/O");
+  expect(learnHostIoTitle).not.toBe(referenceHostIoTitle);
+  expect(learnPackagesTitle).toContain("Learn");
+  expect(learnPackagesTitle).toContain("packages");
+  expect(referencePackagesTitle).toContain("Reference");
+  expect(referencePackagesTitle).toContain("packages");
+  expect(learnPackagesTitle).not.toBe(referencePackagesTitle);
+
   const markdownRoutes = readdirSync(routesDir).filter(
     (name) =>
       name.endsWith(".tsx") && name !== "__root.tsx" && name !== "index.tsx",
   );
+  const markdownTitles: string[] = [];
   for (const name of markdownRoutes) {
     const slug = name.replace(/\.tsx$/, "");
     const page = loadMarkdownPage(slug);
     const source = routeSource(name);
     const title = documentTitle(source, page.title);
+    markdownTitles.push(title);
     expect(title, name).not.toBe("Draconic");
     expect(title, name).toContain(page.title);
     expect(source, name).toContain("public-site.chrome:document-title");
     expect(source, name).not.toMatch(/<h1\b/);
   }
+  expect(new Set(markdownTitles).size).toBe(markdownTitles.length);
 });

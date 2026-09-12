@@ -10,7 +10,7 @@ export const Route = createFileRoute("/reference-packages")({
   loader: () => loadMarkdownPage("reference-packages"),
   head: ({ loaderData }) =>
     pageShareHead({
-      title: loaderData ? `${loaderData.title} · Draconic` : "Draconic",
+      title: loaderData ? `Reference · ${loaderData.title} · Draconic` : "Draconic",
       path: loaderData ? `/${loaderData.slug}` : "/reference-packages",
       description: loaderData
         ? pageDescriptionFromBody(loaderData.body)

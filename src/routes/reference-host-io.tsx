@@ -10,7 +10,7 @@ export const Route = createFileRoute("/reference-host-io")({
   loader: () => loadMarkdownPage("reference-host-io"),
   head: ({ loaderData }) =>
     pageShareHead({
-      title: loaderData ? `${loaderData.title} · Draconic` : "Draconic",
+      title: loaderData ? `Reference · ${loaderData.title} · Draconic` : "Draconic",
       path: loaderData ? `/${loaderData.slug}` : "/reference-host-io",
       description: loaderData
         ? pageDescriptionFromBody(loaderData.body)

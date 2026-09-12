@@ -63,6 +63,9 @@ test("ci_workflow_generates_site_and_deploys_pages", () => {
   expect(text.includes("dist/pages") || text.includes("dist/pages/")).toBe(
     true,
   );
+  expect(text).not.toContain("cargo");
+  expect(text).not.toContain("rust-toolchain");
+  expect(text).not.toContain("draconic-cli");
 });
 
 test("generate_website_script_stages_html_to_dist", () => {

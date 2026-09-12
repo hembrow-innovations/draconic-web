@@ -60,6 +60,6 @@ test("markdown loader does not load docs vault notes", () => {
   expect(slugs).not.toContain("guides-public-docs");
   expect(slugs.every((slug) => !slug.includes("docs"))).toBe(true);
   expect(() =>
-    loadMarkdownPage("../docs/specs/draconic/public-site/purpose"),
+    loadMarkdownPage("../docs/specs/draconic-web/public-site/purpose"),
   ).toThrow();
 });

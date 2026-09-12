@@ -47,7 +47,7 @@ test("generated_html_is_not_authoring_source", () => {
 
 test("ci_workflow_generates_site_and_deploys_pages", () => {
   const workflow = join(
-    languageRepo(),
+    websiteDir,
     ".github",
     "workflows",
     "docs-pages.yml.disabled",

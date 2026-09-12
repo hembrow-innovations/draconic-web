@@ -66,7 +66,7 @@ test("ci_workflow_generates_site_and_deploys_pages", () => {
 });
 
 test("generate_website_script_stages_html_to_dist", () => {
-  const script = join(languageRepo(), "scripts", "generate-website.sh");
+  const script = join(websiteDir, "scripts", "generate-website.sh");
   expect(existsSync(script)).toBe(true);
   const scriptText = readFileSync(script, "utf8");
   expect(scriptText).toContain("pnpm");

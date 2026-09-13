@@ -226,7 +226,8 @@ test("learn pages", () => {
   expect(installPage.body).toContain("extension.toml");
   expect(installPage.body).toContain("draconic check");
   expect(installPage.body).toContain("draconic fmt");
-  expect(installPage.body).not.toContain("language server");
+  expect(installPage.body).toContain("language server");
+  expect(installPage.body).toContain("draconic lsp");
   expect(installPage.body).not.toContain("LSP");
   expect(installPage.body).not.toContain("VS Code");
   expect(install).toContain(

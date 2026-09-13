@@ -116,15 +116,17 @@ draconic build --target native hello.drac -o hello
 
 ## Zed editor
 
-`.drac` files are Programs. Zed can highlight them. The extension is not in the Zed marketplace. Install it as a Zed dev extension from [draconic-zed](https://github.com/hembrow-innovations/draconic-zed).
+`.drac` files are Programs. Zed can highlight them, run a language server, format, run, and debug the JS target. The extension is not in the Zed marketplace. Install it as a Zed dev extension from [draconic-zed](https://github.com/hembrow-innovations/draconic-zed).
 
 - Open the Extensions view (`zed: extensions`)
 - Choose Install Dev Extension
-- Pick the `draconic-zed` repo root, the directory that contains `extension.toml`. Do not pick `languages/draconic`.
+- Pick the `draconic-zed` repo root, the directory that contains `extension.toml`. Do not pick `languages/draconic` or `grammars/draconic`.
 
-Reopen a `.drac` file. The status bar language should read Draconic.
+Reopen a `.drac` file. The status bar language should read Draconic. `draconic` must be on PATH.
 
-While you write, `draconic check` and `draconic fmt` are the CLI loop. See [CLI](cli.html).
+The language server is `draconic lsp`. Format in the editor is `draconic fmt`. Gutter run can `draconic check`, build, and run. JS-target debug uses Zed's host JavaScript adapter.
+
+See [CLI](cli.html).
 
 Learn assumes you can already parse and build.
 

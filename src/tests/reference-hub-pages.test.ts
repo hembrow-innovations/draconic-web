@@ -464,7 +464,10 @@ test("reference hub pages", () => {
   expect(dualWorldRulesPage.body).toContain("## Crossing");
   expect(dualWorldRulesPage.body).toContain("## Backend fit");
   expect(dualWorldRulesPage.body).toContain("## Catchable versus abort");
-  expect(dualWorldRulesPage.body).toContain("It builds today");
+  expect(dualWorldRulesPage.body).toContain("This page is lookup");
+  expect(dualWorldRulesPage.body).not.toContain("Save this as");
+  expect(dualWorldRulesPage.body).not.toContain("It builds today");
+  expect(dualWorldRulesPage.body).not.toContain("draconic parse");
   expect(dualWorldRulesPage.body.match(/```drac/g)?.length).toBe(2);
   expect(dualWorldRules).toContain("nativeCount");
   expect(dualWorldRules).toContain("caught");

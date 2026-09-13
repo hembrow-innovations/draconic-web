@@ -443,7 +443,10 @@ test("reference hub pages", () => {
     expect(typesPage.body).toContain('typeof x === "string"');
     expect(typesPage.body).toContain("function id<T>(x: T): T");
     expect(typesPage.body).toContain("type Point = { x: i32; y: i32 }");
-    expect(typesPage.body).toContain("It builds today");
+    expect(typesPage.body).toContain("This page is lookup");
+    expect(typesPage.body).not.toContain("Save this as");
+    expect(typesPage.body).not.toContain("It builds today");
+    expect(typesPage.body).not.toContain("draconic parse");
     expect(typesPage.body.match(/```drac/g)?.length).toBe(9);
     expect(types).toContain("greet");
     expect(types).toContain("count");

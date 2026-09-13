@@ -1,24 +1,21 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test } from "vitest";
+import { loadMarkdownPage, pageShareHead } from "../lib/content";
 import {
-  loadMarkdownPage,
-  pageDescriptionFromBody,
-  pageShareHead,
-} from "../lib/content";
+  liveShareInput,
+  publicRouteFiles,
+  routeFilePath,
+  routeSource,
+} from "./live-route-share-head";
 
 const srcDir = join(dirname(fileURLToPath(import.meta.url)), "..");
-const routesDir = join(srcDir, "routes");
 const homePitch =
   "JavaScript you already know. Native types when you need them. One language, two backends.";
 const articleLead =
   "This landing assumes you already write JavaScript or TypeScript. Learn will not teach ECMAScript from scratch.";
 const siteOrigin = "https://hembrow-innovations.github.io/draconic";
-
-function routeSource(name: string): string {
-  return readFileSync(join(routesDir, name), "utf8");
-}
 
 function firstProseLine(body: string): string {
   for (const line of body.split(/\r?\n/)) {
@@ -55,6 +52,13 @@ function canonicalHref(head: ReturnType<typeof pageShareHead>): string {
   return link?.href ?? "";
 }
 
+function expectedCanonical(path: string): string {
+  if (path === "/") {
+    return `${siteOrigin}/`;
+  }
+  return `${siteOrigin}${path}`;
+}
+
 test("meta description", () => {
   const learnPage = loadMarkdownPage("learn");
   const articlePage = loadMarkdownPage("from-javascript");
@@ -75,33 +79,31 @@ test("meta description", () => {
   expect(home).toContain("public-site.chrome:meta-description");
   expect(learn).toContain("public-site.chrome:meta-description");
   expect(article).toContain("public-site.chrome:meta-description");
-  expect(home).toContain("pageShareHead");
-  expect(learn).toContain("pageShareHead");
-  expect(article).toContain("pageShareHead");
 
-  const homeHead = pageShareHead({
-    title: "Draconic",
-    path: "/",
-    description: homePitch,
-  });
-  const learnHead = pageShareHead({
-    title: `${learnPage.title} · Draconic`,
-    path: "/learn",
-    description: pageDescriptionFromBody(learnPage.body),
-  });
-  const articleHead = pageShareHead({
-    title: `${articlePage.title} · Draconic`,
-    path: "/from-javascript",
-    description: pageDescriptionFromBody(articlePage.body),
-  });
+  const homeInput = liveShareInput("index.tsx");
+  const learnInput = liveShareInput("learn.tsx");
+  const articleInput = liveShareInput("from-javascript.tsx");
+  expect(homeInput.description).toBe(homePitch);
+  expect(homeInput.description).not.toBe("");
+  expect(learnInput.description).not.toBe("");
+  expect(articleInput.description).not.toBe("");
+  expect(homeInput.path).toBe(routeFilePath(home));
+  expect(learnInput.path).toBe(routeFilePath(learn));
+  expect(articleInput.path).toBe(routeFilePath(article));
+
+  const homeHead = pageShareHead(homeInput);
+  const learnHead = pageShareHead(learnInput);
+  const articleHead = pageShareHead(articleInput);
 
   expect(metaContent(homeHead, "name", "description")).toBe(homePitch);
   expect(metaContent(learnHead, "name", "description")).toBe(homePitch);
   expect(metaContent(articleHead, "name", "description")).toBe(articleLead);
 
-  expect(canonicalHref(homeHead)).toBe(`${siteOrigin}/`);
-  expect(canonicalHref(learnHead)).toBe(`${siteOrigin}/learn`);
-  expect(canonicalHref(articleHead)).toBe(`${siteOrigin}/from-javascript`);
+  expect(canonicalHref(homeHead)).toBe(expectedCanonical(routeFilePath(home)));
+  expect(canonicalHref(learnHead)).toBe(expectedCanonical(routeFilePath(learn)));
+  expect(canonicalHref(articleHead)).toBe(
+    expectedCanonical(routeFilePath(article)),
+  );
   expect(
     new Set([
       canonicalHref(homeHead),
@@ -120,40 +122,41 @@ test("meta description", () => {
   expect(metaContent(articleHead, "property", "og:description")).toBe(
     articleLead,
   );
-  expect(metaContent(homeHead, "property", "og:url")).toBe(`${siteOrigin}/`);
+  expect(metaContent(homeHead, "property", "og:url")).toBe(
+    expectedCanonical(routeFilePath(home)),
+  );
   expect(metaContent(learnHead, "property", "og:url")).toBe(
-    `${siteOrigin}/learn`,
+    expectedCanonical(routeFilePath(learn)),
   );
   expect(metaContent(articleHead, "property", "og:url")).toBe(
-    `${siteOrigin}/from-javascript`,
+    expectedCanonical(routeFilePath(article)),
   );
 
-  const markdownRoutes = readdirSync(routesDir).filter(
-    (name) =>
-      name.endsWith(".tsx") && name !== "__root.tsx" && name !== "index.tsx",
-  );
-  for (const name of markdownRoutes) {
+  for (const name of publicRouteFiles().filter((file) => file !== "index.tsx")) {
     const slug = name.replace(/\.tsx$/, "");
     const page = loadMarkdownPage(slug);
     const source = routeSource(name);
     const lead = firstProseLine(page.body);
-    expect(pageDescriptionFromBody(page.body), name).toBe(lead);
-    expect(source, name).toContain("pageShareHead");
+    const input = liveShareInput(name);
+    expect(input.description, name).toBe(lead);
+    expect(input.description, name).not.toBe("");
+    expect(input.path, name).toBe(routeFilePath(source));
     expect(source, name).toContain("public-site.chrome:meta-description");
-    expect(source, name).toContain("pageDescriptionFromBody");
     expect(source, name).not.toMatch(/<h1\b/);
     expect(source, name).not.toContain("twitter:");
     expect(source, name).not.toContain("og:image");
     expect(source, name).not.toContain("theme-color");
-    const head = pageShareHead({
-      title: `${page.title} · Draconic`,
-      path: `/${page.slug}`,
-      description: pageDescriptionFromBody(page.body),
-    });
+    const head = pageShareHead(input);
     expect(metaContent(head, "name", "description"), name).toBe(lead);
-    expect(canonicalHref(head), name).toBe(`${siteOrigin}/${page.slug}`);
+    expect(canonicalHref(head), name).toBe(
+      expectedCanonical(routeFilePath(source)),
+    );
     expect(metaContent(head, "property", "og:title"), name).toContain(
       page.title,
+    );
+    expect(metaContent(head, "property", "og:description"), name).toBe(lead);
+    expect(metaContent(head, "property", "og:url"), name).toBe(
+      expectedCanonical(routeFilePath(source)),
     );
   }
 
@@ -161,5 +164,4 @@ test("meta description", () => {
   expect(home).not.toContain("twitter:");
   expect(home).not.toContain("og:image");
   expect(home).not.toContain("theme-color");
-  expect(home).toContain(homePitch);
 });

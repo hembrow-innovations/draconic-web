@@ -12,6 +12,8 @@ Identity is hybrid. Imports use a Go-like module path such as `github.com/org/pk
 
 Versions are semver git tags. The lockfile `draconic.lock` pins commit OID and a content hash of the package tree. Resolve lands on ESM files inside the package. Draconic does not replace ESM. That is the join back to [modules](modules.html).
 
+Every `.drac` file in the checkout is importable. There is no exports map. v1 lock fill is direct deps only. Nested git deps are not auto-locked; declare them on the consumer.
+
 ## Package root
 
 A package is a git tree with a `draconic.toml` and an ESM entry. Save this as `index.drac`. It builds today:
@@ -32,6 +34,18 @@ Parse it, typecheck it, or run it. Default `draconic run` target is js:
 draconic parse index.drac
 draconic check index.drac
 draconic run index.drac
+```
+
+Create the package root in that directory. `draconic mod init` writes `module =` and refuses to overwrite an existing manifest. Commit, then tag a semver version so `get` can resolve it. Push so `https://{module_path}.git` works:
+
+```
+git init
+draconic mod init github.com/org/pkg
+git add index.drac draconic.toml
+git commit -m "v1.0.0"
+git tag v1.0.0
+git push origin HEAD
+git push origin v1.0.0
 ```
 
 The matching manifest names the module path:

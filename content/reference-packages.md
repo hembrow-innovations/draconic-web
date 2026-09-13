@@ -13,6 +13,8 @@ Packages are git-backed. v1 does not require a central registry. This page is lo
 - Versions are semver git tags
 - draconic.lock pins commit OID and a content hash of the package tree
 - Resolve lands on ESM files inside the package
+- Every `.drac` file in the checkout is importable; there is no exports map
+- v1 lock fill is direct deps only; nested git deps are not auto-locked
 
 ## Package root
 
@@ -31,6 +33,18 @@ console.log(greet("from a package"));
 ```
 draconic parse index.drac
 draconic check index.drac
+```
+
+Create the package root in that directory. `draconic mod init` writes `module =` and refuses to overwrite an existing manifest. Commit, then tag a semver version so `get` can resolve it. Push so `https://{module_path}.git` works:
+
+```
+git init
+draconic mod init github.com/org/pkg
+git add index.drac draconic.toml
+git commit -m "v1.0.0"
+git tag v1.0.0
+git push origin HEAD
+git push origin v1.0.0
 ```
 
 The matching manifest names the module path:

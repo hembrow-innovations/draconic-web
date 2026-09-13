@@ -86,7 +86,7 @@ draconic doc greet.drac
 
 `draconic help` — show usage
 
-Package commands such as `get` and `mod tidy` are under [packages](reference-packages.html).
+Package commands such as `get`, `mod init`, and `mod tidy` are under [packages](reference-packages.html). `draconic build` fetches missing locked deps unless `--offline`.
 
 ## bindgen
 

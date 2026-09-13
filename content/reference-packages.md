@@ -15,6 +15,10 @@ Packages are git-backed. v1 does not require a central registry. This page is lo
 - Resolve lands on ESM files inside the package
 - Every `.drac` file in the checkout is importable; there is no exports map
 - v1 lock fill is direct deps only; nested git deps are not auto-locked
+- A Program depends on git-tag source via manifest, lock, and Linker
+- Node consumes a flattened artifact only from `draconic build --target js --library`
+- Native `--library` is rejected; native build stays an executable
+- Default `draconic run` stays a script
 
 ## Package root
 

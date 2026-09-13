@@ -79,6 +79,8 @@ A consumer imports named exports with the module path, not a relative `.drac` sp
 import { greet } from "github.com/org/pkg";
 ```
 
+Git-tag packages and Node `--library` are two products. A Program depends on git-tag source through the manifest, the lock, and the Linker. The Linker loads checkout files. Node consumes a flattened artifact only from `draconic build --target js --library`. Native `--library` is rejected. Native build stays an executable. Default `draconic run` stays a script.
+
 Copy [pkg-lib](https://github.com/hembrow-innovations/draconic/tree/main/examples/pkg-lib) and [pkg-consumer](https://github.com/hembrow-innovations/draconic/tree/main/examples/pkg-consumer) when you want a package root plus a consumer in one tree.
 
 ## Flagship service

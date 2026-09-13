@@ -64,7 +64,7 @@ draconic doc greet.drac
 
 ## build
 
-`draconic build --target js|native [--watch] [--strip] [--lto] [--link <lib.a>] <file> [-o <out>]` — compile to JavaScript or a native binary. `--target` is required. `--strip` and `--lto` are native-only size opts (LTO is a size-delta smoke versus the default native artifact). `--link` is native-only. `--watch` rebuilds on change. When `-o` is omitted, JS writes `{stem}.out.js` and native writes `{stem}.out` beside the input.
+`draconic build --target js|native [--watch] [--library] [--strip] [--lto] [--link <lib.a>] <file> [-o <out>]` — compile to JavaScript or a native binary. `--target` is required. `--library` is js-only: it writes a flattened ESM file Node can `import { name } from`. Native `--library` is rejected. Native build stays an executable. Without `--library`, default build and `draconic run` stay scripts. Git-tag packages stay Linker source; see [packages](reference-packages.html). `--strip` and `--lto` are native-only size opts (LTO is a size-delta smoke versus the default native artifact). `--link` is native-only. `--watch` rebuilds on change. When `-o` is omitted, JS writes `{stem}.out.js` and native writes `{stem}.out` beside the input.
 
 ## run
 

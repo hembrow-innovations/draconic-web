@@ -13,6 +13,7 @@ import {
   searchActivateHref,
   searchLiveAnnouncement,
 } from "../components/SiteSearch/searchCombobox";
+import { searchSessionQueryAfter } from "../components/SiteSearch/searchSession";
 
 const srcDir = join(dirname(fileURLToPath(import.meta.url)), "..");
 const websiteDir = join(srcDir, "..");
@@ -81,9 +82,7 @@ test("search", () => {
   expect(search).toContain("useEffect");
   expect(search).toContain("location.pathname");
   expect(search).toContain("location.hash");
-  expect(search).toContain('setQuery("")');
   expect(search).toContain("onKeyDown");
-  expect(search).toContain("Escape");
   expect(search).toContain("useNavigate");
   expect(search).toContain("navigate(");
   expect(search).toContain('role="combobox"');
@@ -568,4 +567,49 @@ test("search keyboard live", () => {
   expect(searchLiveAnnouncement("Public site purpose", 0)).toBe(
     "No matching pages",
   );
+});
+
+test("search session", () => {
+  const search = readFileSync(join(searchDir, "SiteSearch.tsx"), "utf8");
+  expect(search).toContain(
+    'setQuery(searchSessionQueryAfter(query, { type: "Escape" }))',
+  );
+  expect(search).toContain('type: "follow"');
+  expect(search).toContain("onClick");
+
+  const index = buildSearchIndex();
+  const query = "Dual worlds";
+  const hits = querySearchIndex(index, query);
+  expect(hits.some((hit) => hit.href === "/dual-worlds")).toBe(true);
+  expect(hits.length).toBeGreaterThan(0);
+
+  const afterEscape = searchSessionQueryAfter(query, { type: "Escape" });
+  expect(afterEscape).toBe("");
+  expect(querySearchIndex(index, afterEscape)).toEqual([]);
+
+  const dualIndex = hits.findIndex((hit) => hit.href === "/dual-worlds");
+  expect(dualIndex).toBeGreaterThanOrEqual(0);
+  const href = searchActivateHref(hits, dualIndex, query);
+  expect(href).toBe("/dual-worlds");
+  const afterSameRoute = searchSessionQueryAfter(query, {
+    type: "follow",
+    href: href!,
+    pathname: "/dual-worlds",
+    hash: "",
+  });
+  expect(afterSameRoute).toBe("");
+  expect(querySearchIndex(index, afterSameRoute)).toEqual([]);
+
+  const headingQuery = "From source";
+  const headingHits = querySearchIndex(index, headingQuery);
+  const headingHref = searchActivateHref(headingHits, 0, headingQuery);
+  expect(headingHref).toBe("/install#from-source");
+  const afterHeading = searchSessionQueryAfter(headingQuery, {
+    type: "follow",
+    href: headingHref!,
+    pathname: "/install",
+    hash: "from-source",
+  });
+  expect(afterHeading).toBe("");
+  expect(querySearchIndex(index, afterHeading)).toEqual([]);
 });

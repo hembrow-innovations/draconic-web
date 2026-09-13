@@ -11,6 +11,7 @@ import {
   searchActivateHref,
   searchLiveAnnouncement,
 } from "./searchCombobox";
+import { searchSessionQueryAfter } from "./searchSession";
 import type { SiteSearchProps } from "./SiteSearch.types";
 import {
   siteSearchEmptyVariants,
@@ -63,7 +64,7 @@ export function SiteSearch({ className, ...props }: SiteSearchProps) {
         onChange={(event) => setQuery(event.target.value)}
         onKeyDown={(event) => {
           if (event.key === "Escape") {
-            setQuery("");
+            setQuery(searchSessionQueryAfter(query, { type: "Escape" }));
             return;
           }
           if (event.key === "ArrowDown" || event.key === "ArrowUp") {
@@ -85,6 +86,14 @@ export function SiteSearch({ className, ...props }: SiteSearchProps) {
             const hashAt = href.indexOf("#");
             const to = hashAt === -1 ? href : href.slice(0, hashAt);
             const hash = hashAt === -1 ? undefined : href.slice(hashAt + 1);
+            setQuery(
+              searchSessionQueryAfter(query, {
+                type: "follow",
+                href,
+                pathname: location.pathname,
+                hash: location.hash.replace(/^#/, ""),
+              }),
+            );
             void navigate({ to, hash });
           }
         }}
@@ -122,6 +131,16 @@ export function SiteSearch({ className, ...props }: SiteSearchProps) {
                   hash={hash}
                   tabIndex={-1}
                   className={siteSearchLinkVariants({ selected })}
+                  onClick={() =>
+                    setQuery(
+                      searchSessionQueryAfter(query, {
+                        type: "follow",
+                        href,
+                        pathname: location.pathname,
+                        hash: location.hash.replace(/^#/, ""),
+                      }),
+                    )
+                  }
                 >
                   {searchHitLabel(entry, query)}
                 </Link>

@@ -53,7 +53,7 @@ const referencePages = [
     slug: "reference-packages",
     title: "packages",
     status: "shipped",
-    copy: "This page is lookup, not the Learn chapter.",
+    copy: "This page is lookup: Go-like module path, manifest map, semver git tags, lock pin, get, tidy, and named import from the module path.",
   },
 ] as const;
 
@@ -549,14 +549,17 @@ test("reference hub pages", () => {
   expect(packagesPage.body).toContain("```drac");
   expect(packagesPage.body).toContain("export function greet");
   expect(packagesPage.body).toContain('from "github.com/org/pkg"');
-  expect(packagesPage.body).toContain("It builds today");
-  expect(packagesPage.body).toContain("draconic check index.drac");
   expect(packagesPage.body).toContain("draconic get github.com/org/pkg@1.0.0");
   expect(packagesPage.body).toContain("draconic mod tidy");
   expect(packagesPage.body).toContain("--url");
   expect(packagesPage.body).toContain("## Package root");
   expect(packagesPage.body).toContain("## get");
   expect(packagesPage.body).toContain("## mod tidy");
+  expect(packagesPage.body).toContain("draconic check");
+  expect(packagesPage.body).toContain("This page is lookup");
+  expect(packagesPage.body).not.toContain("Save this as");
+  expect(packagesPage.body).not.toContain("It builds today");
+  expect(packagesPage.body).not.toContain("draconic parse");
   expect(packagesPage.body.match(/```drac/g)?.length).toBe(1);
   expect(packages).toContain("greet");
   expect(packages).toContain("<pre>");

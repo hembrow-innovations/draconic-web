@@ -6,7 +6,9 @@ status: shipped
 
 # packages
 
-Packages are git-backed. v1 does not require a central registry. This page is lookup, not the Learn chapter. See [packages](packages.html) for the flow and [CLI](cli.html) for command names.
+Packages are git-backed. v1 does not require a central registry.
+
+This page is lookup: Go-like module path, manifest map, semver git tags, lock pin, get, tidy, and named import from the module path. Keep it open while you write. `draconic check` is the Checker. Open [packages](packages.html) for the flow, or [CLI](cli.html) for command names.
 
 - Imports use a Go-like module path such as github.com/org/pkg
 - draconic.toml may map that path to a git URL
@@ -22,7 +24,7 @@ Packages are git-backed. v1 does not require a central registry. This page is lo
 
 ## Package root
 
-A package is a git tree with a `draconic.toml` and an ESM entry. Save this as `index.drac`. It builds today:
+A package is a git tree with a `draconic.toml` and an ESM entry. `draconic mod init` writes `module =` and refuses to overwrite an existing manifest. Tag a semver version so `get` can resolve it.
 
 ```drac
 let console = globalThis.console;
@@ -32,23 +34,6 @@ export function greet(name: string): string {
 }
 
 console.log(greet("from a package"));
-```
-
-```
-draconic parse index.drac
-draconic check index.drac
-```
-
-Create the package root in that directory. `draconic mod init` writes `module =` and refuses to overwrite an existing manifest. Commit, then tag a semver version so `get` can resolve it. Push so `https://{module_path}.git` works:
-
-```
-git init
-draconic mod init github.com/org/pkg
-git add index.drac draconic.toml
-git commit -m "v1.0.0"
-git tag v1.0.0
-git push origin HEAD
-git push origin v1.0.0
 ```
 
 The matching manifest names the module path:

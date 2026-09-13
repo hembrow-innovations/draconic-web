@@ -22,7 +22,12 @@ const pages = [
   "/dual-world-rules",
   "/reference-host-io",
   "/reference-packages",
-].map((path) => ({ path }));
+  "/404",
+].map((path) =>
+  path === "/404"
+    ? { path, prerender: { autoSubfolderIndex: false } }
+    : { path },
+);
 
 export default defineConfig({
   base: pagesBase ? `${pagesBase}/` : "/",

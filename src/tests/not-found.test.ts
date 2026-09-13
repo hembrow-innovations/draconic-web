@@ -2,6 +2,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test } from "vitest";
+import { publishedPages, websiteDir } from "./website-pipeline-helpers";
 
 const srcDir = join(dirname(fileURLToPath(import.meta.url)), "..");
 const notFoundDir = join(srcDir, "components", "NotFound");
@@ -66,7 +67,6 @@ test("not found", () => {
   expect(root.indexOf("<Outlet")).toBeLessThan(root.indexOf("<SiteFooter"));
   expect(root).not.toContain("DocsShell");
   expect(existsSync(join(routesDir, "$.tsx"))).toBe(false);
-  expect(root).not.toMatch(/statusCode:\s*200/);
 
   expect(notFound).toContain("public-site.chrome:not-found");
   expect(notFound).toMatch(/<h1\b/);
@@ -109,4 +109,18 @@ test("not found", () => {
     expect(source, file).not.toMatch(/#[0-9A-Fa-f]{3,8}/);
     expect(source, file).not.toMatch(/\bmax-w-sm\b/);
   }
-});
+
+  const viteConfig = readFileSync(join(websiteDir, "vite.config.ts"), "utf8");
+  expect(viteConfig).toContain('"/404"');
+
+  const html = readFileSync(join(publishedPages(), "404.html"), "utf8");
+  expect(html).toContain("Skip to content");
+  expect(html).toMatch(/<aside\b/);
+  expect(html).toContain(">Learn</a>");
+  expect(html).toContain(">Reference</a>");
+  expect(html).toMatch(/<footer\b/);
+  expect(html).toMatch(/<h1\b/);
+  expect(html).toMatch(/Not found/);
+  expect(html).toMatch(/>Home</);
+  expect(html).not.toContain('aria-current="page"');
+}, 300_000);

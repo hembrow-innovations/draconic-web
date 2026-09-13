@@ -6,53 +6,35 @@ status: shipped
 
 # host I/O
 
-Host I/O is how a Program talks to the machine. This page is lookup. The designed lesson is [host I/O](host-io.html).
+Host I/O is how a Program talks to the machine.
 
-Host APIs are free identifiers, not ESM imports.
+This page is lookup: free host identifiers, call shapes, and short compiling samples. Keep it open while you write. Host APIs are free identifiers, not ESM imports. `draconic check` is the Checker. Open [host I/O](host-io.html) for the designed lesson, or [CLI](cli.html) for command names.
 
 ## stdoutWrite
 
-Save this as `hello-host.drac`. It builds today:
+`stdoutWrite` writes a string to stdout.
 
 ```drac
 stdoutWrite("hello from Draconic\n");
 ```
 
-```
-draconic parse hello-host.drac
-draconic check hello-host.drac
-draconic run hello-host.drac
-```
-
 ## processArgs
 
-`processArgs()` returns leftover user args after `draconic run file.drac` as a string array. `envGet(key)` reads a string or undefined. `envSet(key, value)` writes one. `envDelete(key)` removes one. `exit(code)` terminates. `stdinReadLine()` reads one line. Save this as `args.drac`. It builds today:
+`processArgs()` returns leftover user args after `draconic run file.drac` as a string array. `envGet(key)` reads a string or undefined. `envSet(key, value)` writes one. `envDelete(key)` removes one. `exit(code)` terminates. `stdinReadLine()` reads one line.
 
 ```drac
 let args = processArgs();
 stdoutWrite("hello from processArgs\n");
 ```
 
-```
-draconic parse args.drac
-draconic check args.drac
-draconic run args.drac
-```
-
 ## pathJoin
 
-`pathJoin(...)` joins path segments. No I/O. Save this as `join.drac`. It builds today:
+`pathJoin(...)` joins path segments. No I/O.
 
 ```drac
 let joined = pathJoin("foo", "bar");
 stdoutWrite(joined);
 stdoutWrite("\n");
-```
-
-```
-draconic parse join.drac
-draconic check join.drac
-draconic run join.drac
 ```
 
 `pathNormalize(path)` collapses `.`, `..`, and duplicate separators. `pathDirname(path)` is the parent. `pathBasename(path)` is the last segment. `pathExtname(path)` is the extension. `pathIsAbsolute(path)` is true for an absolute path. `pathResolve(...)` resolves relative to cwd.
@@ -63,7 +45,7 @@ draconic run join.drac
 
 ## mkdir
 
-`mkdir(path)` creates one directory. `mkdirAll(path)` is recursive. `readdir(path)` lists names. `rmdir(path)` and `removeFile(path)` delete. `renameFile(from, to)` and `copyFile(from, to)` take two paths. Save this as `dirs.drac`. It builds today:
+`mkdir(path)` creates one directory. `mkdirAll(path)` is recursive. `readdir(path)` lists names. `rmdir(path)` and `removeFile(path)` delete. `renameFile(from, to)` and `copyFile(from, to)` take two paths.
 
 ```drac
 mkdir("notes");
@@ -73,19 +55,13 @@ let text = readFileText(pathJoin("notes", "note.txt"));
 stdoutWrite(text);
 ```
 
-```
-draconic parse dirs.drac
-draconic check dirs.drac
-draconic run dirs.drac
-```
-
 ## Names
 
 - Process and stdio: `processArgs()`, `envGet(key)`, `envSet(key, value)`, `envDelete(key)`, `exit(code)`, `stdinReadLine()`, `stdinReadBytes()`, `stdoutWrite`, `stderrWrite`
 - Path: `pathJoin(...)`, `pathNormalize(path)`, `pathDirname(path)`, `pathBasename(path)`, `pathExtname(path)`, `pathIsAbsolute(path)`, `pathResolve(...)`
 - Filesystem: `readFileText(path)`, `readFileBytes(path)`, `writeFileText(path, text)`, `writeFileBytes(path, bytes)`, `appendFileText(path, text)`, `appendFileBytes(path, bytes)`, `exists(path)`, `stat(path)`, `mkdir(path)`, `mkdirAll(path)`, `readdir(path)`, `rmdir(path)`, `removeFile(path)`, `renameFile(from, to)`, `copyFile(from, to)`
 - TCP sockets: `tcpListen(port)`, `tcpAccept(listen)`, `tcpConnect(host, port)`, `tcpRead(connection, maxLen)`, `tcpWrite(connection, bytes)`, `closeTcp(handle)`
-- HTTP/1.1 helpers on those sockets: `httpParseRequest(raw)`, `httpWriteResponse(status, reason, headers, body)` — not a Node-shaped http module as the only entry
+- HTTP/1.1 helpers on those sockets: `httpParseRequest(raw)`, `httpWriteResponse(status, reason, headers, body)`. Not a Node-shaped http module as the only entry
 
 File handles `openFile`, `fileRead`, `fileWrite`, `fileSeek`, and `closeFile` are native-only. They hard-error on js.
 
@@ -95,7 +71,7 @@ Listen and server paths started native-first. Those names also build on the JS b
 
 ## HTTP echo
 
-Accept, parse one request, write the path as the body, close. Save this as `echo.drac`. It builds today:
+Accept, parse one request, write the path as the body, close.
 
 ```drac
 let s = tcpListen(8080);
@@ -109,13 +85,6 @@ while (true) {
   tcpWrite(a, resp);
   closeTcp(a);
 }
-```
-
-```
-draconic parse echo.drac
-draconic check echo.drac
-draconic build --target native echo.drac -o echo
-./echo
 ```
 
 Default permission policy is permissive; `--allow-*` on `draconic run` installs an opt-in grant subset.

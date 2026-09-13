@@ -47,7 +47,7 @@ const referencePages = [
     slug: "reference-host-io",
     title: "host I/O",
     status: "shipped",
-    copy: "This page is lookup. The designed lesson is",
+    copy: "This page is lookup: free host identifiers, call shapes, and short compiling samples.",
   },
   {
     slug: "reference-packages",
@@ -490,8 +490,6 @@ test("reference hub pages", () => {
     expect(hostIoPage.body).toContain("`envDelete(key)`");
     expect(hostIoPage.body).toContain("`exit(code)`");
     expect(hostIoPage.body).toContain("`stdinReadLine()`");
-    expect(hostIoPage.body).toContain("draconic check args.drac");
-    expect(hostIoPage.body).toContain("draconic run args.drac");
     expect(hostIoPage.body).toContain("## pathJoin");
     expect(hostIoPage.body).toContain("`pathJoin(...)`");
     expect(hostIoPage.body).toContain("`pathNormalize(path)`");
@@ -511,10 +509,6 @@ test("reference hub pages", () => {
     expect(hostIoPage.body).toContain("`renameFile(from, to)`");
     expect(hostIoPage.body).toContain("`copyFile(from, to)`");
     expect(hostIoPage.body).toContain("`stat(path)`");
-    expect(hostIoPage.body).toContain("draconic check join.drac");
-    expect(hostIoPage.body).toContain("draconic run join.drac");
-    expect(hostIoPage.body).toContain("draconic check dirs.drac");
-    expect(hostIoPage.body).toContain("draconic run dirs.drac");
     expect(hostIoPage.body).toContain("## Names");
   expect(hostIoPage.body).toContain("## HTTP echo");
   expect(hostIoPage.body).toContain("`tcpListen(port)`");
@@ -538,11 +532,10 @@ test("reference hub pages", () => {
   expect(hostIoPage.body).toContain(
     'httpWriteResponse(200, "OK", "Content-Type: text/plain\\r\\n", path)',
   );
-  expect(hostIoPage.body).toContain("draconic check echo.drac");
-  expect(hostIoPage.body).toContain(
-    "draconic build --target native echo.drac -o echo",
-  );
-  expect(hostIoPage.body).toContain("It builds today");
+  expect(hostIoPage.body).toContain("This page is lookup");
+  expect(hostIoPage.body).not.toContain("Save this as");
+  expect(hostIoPage.body).not.toContain("It builds today");
+  expect(hostIoPage.body).not.toContain("draconic parse");
   expect(hostIoPage.body).not.toContain(
     "hard-errors unsupported host APIs until an explicit bridge exists",
   );

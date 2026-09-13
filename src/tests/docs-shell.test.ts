@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test } from "vitest";
+import { headingIdInView } from "../features/docs/OnThisPage";
 import {
   extractPageOutline,
   loadMarkdownPage,
@@ -124,8 +125,15 @@ test("docs shell", () => {
   expect(outline).toContain('aria-label="On this page"');
   expect(outline).toContain("On this page");
   expect(outline).toContain("href={`#${item.id}`}");
-  expect(outline).toContain("useLocation");
-  expect(outline).toContain("location.hash");
+  expect(outline).toContain("headingIdInView");
+  expect(outline).toContain("setCurrentId");
+  expect(outline).toContain("useEffect");
+  expect(outline).toContain('addEventListener("scroll"');
+  expect(outline).toContain("getBoundingClientRect");
+  expect(outline).toContain("getElementById");
+  expect(outline).toContain("window.innerHeight");
+  expect(outline).not.toContain("location.hash");
+  expect(outline).not.toContain("useLocation");
   expect(outline).toContain("item.id");
   expect(outline).toContain('"aria-current": "true"');
   expect(outline).not.toContain('"aria-current": "page"');
@@ -239,7 +247,10 @@ test("page outline", () => {
     "utf8",
   );
   expect(outline.map((item) => item.id)).toContain("zed-editor");
-  expect(outlineSource).toContain("location.hash");
+  expect(outlineSource).toContain("headingIdInView");
+  expect(outlineSource).toContain("setCurrentId");
+  expect(outlineSource).toContain("window.innerHeight");
+  expect(outlineSource).not.toContain("location.hash");
   expect(outlineSource).toContain("item.id");
   expect(outlineSource).toContain('"aria-current": "true"');
   expect(outlineSource).not.toContain('"aria-current": "page"');
@@ -270,4 +281,28 @@ test("page outline", () => {
   ]);
   expect(cli.map((item) => item.id)).toContain("shebang");
   expect(cli.every((item) => item.level === 2)).toBe(true);
+});
+
+test("heading in view", () => {
+  expect(headingIdInView.length).toBe(2);
+  expect(
+    headingIdInView(
+      [
+        { id: "from-source", top: 80 },
+        { id: "zed-editor", top: 900 },
+        { id: "reproducibility", top: 1800 },
+      ],
+      700,
+    ),
+  ).toBe("from-source");
+  expect(
+    headingIdInView(
+      [
+        { id: "from-source", top: -400 },
+        { id: "zed-editor", top: 40 },
+        { id: "reproducibility", top: 900 },
+      ],
+      700,
+    ),
+  ).toBe("zed-editor");
 });

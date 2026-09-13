@@ -6,6 +6,11 @@ import {
   searchHitLabel,
   useSearchIndex,
 } from "../../lib/search";
+import {
+  nextSearchActiveIndex,
+  searchActivateHref,
+  searchLiveAnnouncement,
+} from "./searchCombobox";
 import type { SiteSearchProps } from "./SiteSearch.types";
 import {
   siteSearchEmptyVariants,
@@ -38,7 +43,6 @@ export function SiteSearch({ className, ...props }: SiteSearchProps) {
   const expanded = results.length > 0;
   const clampedIndex =
     results.length === 0 ? 0 : Math.min(activeIndex, results.length - 1);
-  const activeHit = results[clampedIndex];
   const activeOptionId =
     results.length > 0 ? `${searchId}-hit-${clampedIndex}` : undefined;
 
@@ -62,31 +66,22 @@ export function SiteSearch({ className, ...props }: SiteSearchProps) {
             setQuery("");
             return;
           }
-          if (event.key === "ArrowDown") {
+          if (event.key === "ArrowDown" || event.key === "ArrowUp") {
             if (results.length === 0) {
               return;
             }
             event.preventDefault();
             setActiveIndex((current) =>
-              current + 1 < results.length ? current + 1 : current,
+              nextSearchActiveIndex(current, results.length, event.key),
             );
             return;
           }
-          if (event.key === "ArrowUp") {
-            if (results.length === 0) {
-              return;
-            }
-            event.preventDefault();
-            setActiveIndex((current) => (current > 0 ? current - 1 : 0));
-            return;
-          }
           if (event.key === "Enter") {
-            const hit = activeHit ?? results[0];
-            if (!hit) {
+            const href = searchActivateHref(results, clampedIndex, query);
+            if (href === undefined) {
               return;
             }
             event.preventDefault();
-            const href = searchHitHref(hit, query);
             const hashAt = href.indexOf("#");
             const to = hashAt === -1 ? href : href.slice(0, hashAt);
             const hash = hashAt === -1 ? undefined : href.slice(hashAt + 1);
@@ -101,11 +96,7 @@ export function SiteSearch({ className, ...props }: SiteSearchProps) {
         className={siteSearchInputVariants()}
       />
       <p className={siteSearchLiveVariants()} aria-live="polite">
-        {miss
-          ? "No matching pages"
-          : results.length > 0
-            ? `${results.length} matching pages`
-            : ""}
+        {searchLiveAnnouncement(query, results.length)}
       </p>
       {results.length > 0 ? (
         <ul

@@ -8,6 +8,11 @@ import {
   searchHitHref,
   searchHitLabel,
 } from "../lib/search";
+import {
+  nextSearchActiveIndex,
+  searchActivateHref,
+  searchLiveAnnouncement,
+} from "../components/SiteSearch/searchCombobox";
 
 const srcDir = join(dirname(fileURLToPath(import.meta.url)), "..");
 const websiteDir = join(srcDir, "..");
@@ -79,9 +84,6 @@ test("search", () => {
   expect(search).toContain('setQuery("")');
   expect(search).toContain("onKeyDown");
   expect(search).toContain("Escape");
-  expect(search).toContain("ArrowDown");
-  expect(search).toContain("ArrowUp");
-  expect(search).toContain('"Enter"');
   expect(search).toContain("useNavigate");
   expect(search).toContain("navigate(");
   expect(search).toContain('role="combobox"');
@@ -91,8 +93,6 @@ test("search", () => {
   expect(search).toContain('role="listbox"');
   expect(search).toContain('role="option"');
   expect(search).toContain("aria-selected");
-  expect(search).toContain("aria-live");
-  expect(search).toContain("${results.length}");
   expect(search).not.toContain("aria-current");
   expect(search).toContain('type="search"');
   expect(search).toContain("querySearchIndex");
@@ -529,4 +529,43 @@ test("search", () => {
     expect(source, file).not.toMatch(/#[0-9A-Fa-f]{3,8}/);
     expect(source, file).not.toMatch(/\bmax-w-sm\b/);
   }
+});
+
+test("search keyboard live", () => {
+  const search = readFileSync(join(searchDir, "SiteSearch.tsx"), "utf8");
+  expect(search).toContain(
+    "nextSearchActiveIndex(current, results.length, event.key)",
+  );
+  expect(search).toContain("searchActivateHref(results, clampedIndex, query)");
+  expect(search).toContain("searchLiveAnnouncement(query, results.length)");
+  expect(search).toContain("aria-live");
+
+  const index = buildSearchIndex();
+  const dualWorlds = querySearchIndex(index, "Dual worlds");
+  expect(dualWorlds.some((hit) => hit.href === "/dual-worlds")).toBe(true);
+  expect(searchLiveAnnouncement("Dual worlds", dualWorlds.length)).toBe(
+    `${dualWorlds.length} matching pages`,
+  );
+  expect(searchActivateHref(dualWorlds, 0, "Dual worlds")).toBe(
+    searchHitHref(dualWorlds[0]!, "Dual worlds"),
+  );
+
+  const hits = querySearchIndex(index, "i32");
+  expect(hits.length).toBeGreaterThan(1);
+  const firstHref = searchActivateHref(hits, 0, "i32");
+  expect(firstHref).toBe(searchHitHref(hits[0]!, "i32"));
+  const afterDown = nextSearchActiveIndex(0, hits.length, "ArrowDown");
+  expect(afterDown).not.toBe(0);
+  expect(searchActivateHref(hits, afterDown, "i32")).toBe(
+    searchHitHref(hits[1]!, "i32"),
+  );
+  expect(searchActivateHref(hits, afterDown, "i32")).not.toBe(firstHref);
+  const afterUp = nextSearchActiveIndex(afterDown, hits.length, "ArrowUp");
+  expect(afterUp).toBe(0);
+  expect(searchActivateHref(hits, afterUp, "i32")).toBe(firstHref);
+
+  expect(querySearchIndex(index, "Public site purpose")).toEqual([]);
+  expect(searchLiveAnnouncement("Public site purpose", 0)).toBe(
+    "No matching pages",
+  );
 });

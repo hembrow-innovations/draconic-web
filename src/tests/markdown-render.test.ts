@@ -26,6 +26,9 @@ test("markdown render install subset", () => {
     "curl -fsSL https://raw.githubusercontent.com/hembrow-innovations/draconic/main/scripts/install.sh | sh",
   );
   expect(html).toContain(
+    '<h2 id="windows"><a href="#windows">Windows</a></h2>',
+  );
+  expect(html).toContain(
     '<h2 id="from-source"><a href="#from-source">From source</a></h2>',
   );
   expect(html).toContain(

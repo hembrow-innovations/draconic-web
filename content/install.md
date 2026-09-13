@@ -8,7 +8,7 @@ status: shipped
 
 Get the toolchain, then parse, build, and run a Program before reading further.
 
-Install:
+On macOS and Linux:
 
 ```
 curl -fsSL https://raw.githubusercontent.com/hembrow-innovations/draconic/main/scripts/install.sh | sh
@@ -32,6 +32,34 @@ The install script picks the host pair. Release CI builds a host-triple binary f
 
 The one-liner downloads a host-triple artifact from GitHub Releases. If that artifact is not published yet, build from source.
 
+## Windows
+
+Do not run the Unix one-liner. Download the host-triple artifact from GitHub Releases and put `draconic.exe` on PATH.
+
+- windows/amd64: `draconic-x86_64-pc-windows-msvc.exe`
+- windows/arm64: `draconic-aarch64-pc-windows-msvc.exe`
+
+PowerShell for windows/amd64:
+
+```
+New-Item -ItemType Directory -Force $env:USERPROFILE\.draconic\bin | Out-Null
+Invoke-WebRequest -Uri https://github.com/hembrow-innovations/draconic/releases/latest/download/draconic-x86_64-pc-windows-msvc.exe -OutFile $env:USERPROFILE\.draconic\bin\draconic.exe
+$env:PATH = "$env:USERPROFILE\.draconic\bin;$env:PATH"
+draconic -V
+```
+
+On windows/arm64, use the arm64 artifact name. If that artifact is not published yet, build from source with cargo:
+
+```
+git clone https://github.com/hembrow-innovations/draconic.git
+cd draconic
+cargo build -p draconic-cli --release
+$env:PATH = "$PWD\target\release;$env:PATH"
+draconic -V
+```
+
+That writes `target\release\draconic.exe`.
+
 ## From source
 
 Requires a Rust toolchain (`cargo`). Clone the repository, then build the CLI:
@@ -50,6 +78,19 @@ draconic -V
 ```
 
 The same commands live in the [repository README](https://github.com/hembrow-innovations/draconic).
+
+A working `draconic -V` prints the product name on the first line, then commit, host, and LLVM:
+
+```
+draconic 0.1.0
+commit: ...
+host: ...
+LLVM: ...
+```
+
+commit, host, and LLVM vary by build.
+
+The next about ten minutes: parse, build, and run the hello Program, then pick a landing.
 
 A Program is a unit of Draconic source the toolchain accepts. Save this as `hello.drac`. It builds today:
 

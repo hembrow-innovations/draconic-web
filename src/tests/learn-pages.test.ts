@@ -241,6 +241,44 @@ test("learn pages", () => {
   expect(nextIdx).toBeGreaterThan(-1);
   expect(nativeIdx).toBeLessThan(zedIdx);
   expect(zedIdx).toBeLessThan(nextIdx);
+
+  const unixCurl =
+    "curl -fsSL https://raw.githubusercontent.com/hembrow-innovations/draconic/main/scripts/install.sh | sh";
+  expect(installPage.body).toContain(unixCurl);
+  expect(installPage.body).toContain('export PATH="$HOME/.draconic/bin:$PATH"');
+  const windowsIdx = installPage.body.indexOf("## Windows");
+  const fromSourceIdx = installPage.body.indexOf("## From source");
+  expect(windowsIdx).toBeGreaterThan(-1);
+  expect(fromSourceIdx).toBeGreaterThan(windowsIdx);
+  const windowsSection = installPage.body.slice(windowsIdx, fromSourceIdx);
+  expect(windowsSection).not.toContain("curl");
+  expect(windowsSection).not.toContain("export PATH");
+  expect(windowsSection).toContain("draconic-x86_64-pc-windows-msvc.exe");
+  expect(windowsSection).toContain("draconic-aarch64-pc-windows-msvc.exe");
+  expect(windowsSection).toContain("draconic.exe");
+  expect(windowsSection).toContain("$env:PATH");
+  expect(windowsSection).toContain("cargo build -p draconic-cli --release");
+  expect(windowsSection).toContain("target\\release\\draconic.exe");
+  expect(windowsSection).toContain("draconic -V");
+
+  const versionOutIdx = installPage.body.indexOf("draconic 0.1.0");
+  expect(versionOutIdx).toBeGreaterThan(windowsIdx);
+  expect(installPage.body).toContain("commit:");
+  expect(installPage.body).toContain("host:");
+  expect(installPage.body).toContain("LLVM:");
+  const versionFence = installPage.body.slice(versionOutIdx, versionOutIdx + 80);
+  expect(versionFence).toMatch(/^draconic 0\.1\.0/m);
+  expect(versionFence).toContain("commit:");
+  expect(versionFence).toContain("host:");
+  expect(versionFence).toContain("LLVM:");
+
+  const tenIdx = installPage.body.indexOf("about ten minutes");
+  const helloSaveIdx = installPage.body.indexOf("Save this as `hello.drac`");
+  expect(tenIdx).toBeGreaterThan(versionOutIdx);
+  expect(helloSaveIdx).toBeGreaterThan(tenIdx);
+  expect(installPage.body).toMatch(
+    /about ten minutes: parse, build, and run the hello Program, then pick a landing/,
+  );
   expect(dualWorlds).toContain('<a href="/from-javascript">from JavaScript</a>');
   expect(dualWorlds).toContain('<a href="/from-systems">from systems</a>');
   expect(dualWorlds).toContain('<a href="/modules">modules</a>');

@@ -222,11 +222,13 @@ test("page outline", () => {
   const html = renderMarkdown(install.body);
   const outline = extractPageOutline(install.body);
   expect(outline.map((item) => item.id)).toEqual([
+    "windows",
     "from-source",
     "zed-editor",
     "reproducibility",
   ]);
   expect(outline.map((item) => item.text)).toEqual([
+    "Windows",
     "From source",
     "Zed editor",
     "Reproducibility",
